@@ -279,10 +279,15 @@ async def multi_agent_stream(request: Request):
     logger.info(f"[{request_id}] {get_text('log_multi_agent_parsed', LANGUAGE, time=f'{(parse_time - start_time)*1000:.2f}')}")
 
     async def generator():
+        import json
+
         # Get a chat client for the requested model
         model_chat_client = get_chat_client_for_model(model_name)
         if model_chat_client is None:
-            yield get_text('error_config_missing', LANGUAGE) + "\n"
+            yield json.dumps(
+                {"type": "error", "message": get_text('error_config_missing', LANGUAGE)},
+                ensure_ascii=False,
+            ) + "\n"
             return
         
         # Create model-specific agents
@@ -305,9 +310,10 @@ async def multi_agent_stream(request: Request):
         )
 
         try:
-            import json
-            
-            yield get_text('ui_multi_agent_start', LANGUAGE) + "\n\n"
+            yield json.dumps(
+                {"type": "ui_message", "message": get_text('ui_multi_agent_start', LANGUAGE)},
+                ensure_ascii=False,
+            ) + "\n"
             yield json.dumps({"type": "start"}, ensure_ascii=False) + "\n"
             
             # Use ConcurrentBuilder to create parallel workflow
