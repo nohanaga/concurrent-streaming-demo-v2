@@ -96,29 +96,6 @@ def get_chat_client_for_model(model_name: str = None):
         deployment_name=deployment_name,
     )
 
-# Create agents
-critical_agent = None
-positive_agent = None
-synthesizer_agent = None
-
-if chat_client:
-    # Critical analyst agent
-    critical_agent = chat_client.create_agent(
-        name="CriticalAnalyst",
-        instructions=get_text('agent_critical_instructions', LANGUAGE)
-    )
-    
-    # Positive advocate agent
-    positive_agent = chat_client.create_agent(
-        name="PositiveAdvocate",
-        instructions=get_text('agent_positive_instructions', LANGUAGE)
-    )
-    
-    # Synthesizer agent
-    synthesizer_agent = chat_client.create_agent(
-        name="Synthesizer",
-        instructions=get_text('agent_synthesizer_instructions', LANGUAGE)
-    )
 
 def search_tool(
     query: Annotated[str, Field(description="Search query")],
@@ -195,8 +172,10 @@ async def api_stream(request: Request):
         # Create a simple agent
         agent_start = time.time()
         logger.info(f"[{request_id}] {get_text('log_agent_creating', LANGUAGE)}")
-        simple_agent = model_chat_client.create_agent(
-            instructions=get_text('agent_simple_instructions', LANGUAGE)
+        simple_agent = ChatAgent(
+            name="SimpleAgent",
+            chat_client=model_chat_client,
+            instructions=get_text('agent_simple_instructions', LANGUAGE),
         )
         logger.info(f"[{request_id}] {get_text('log_agent_created', LANGUAGE, time=f'{(time.time() - agent_start)*1000:.2f}')}")
         
@@ -307,19 +286,22 @@ async def multi_agent_stream(request: Request):
             return
         
         # Create model-specific agents
-        model_critical_agent = model_chat_client.create_agent(
+        model_critical_agent = ChatAgent(
             name="CriticalAnalyst",
-            instructions=get_text('agent_critical_instructions', LANGUAGE)
+            chat_client=model_chat_client,
+            instructions=get_text('agent_critical_instructions', LANGUAGE),
         )
-        
-        model_positive_agent = model_chat_client.create_agent(
+
+        model_positive_agent = ChatAgent(
             name="PositiveAdvocate",
-            instructions=get_text('agent_positive_instructions', LANGUAGE)
+            chat_client=model_chat_client,
+            instructions=get_text('agent_positive_instructions', LANGUAGE),
         )
-        
-        model_synthesizer_agent = model_chat_client.create_agent(
+
+        model_synthesizer_agent = ChatAgent(
             name="Synthesizer",
-            instructions=get_text('agent_synthesizer_instructions', LANGUAGE)
+            chat_client=model_chat_client,
+            instructions=get_text('agent_synthesizer_instructions', LANGUAGE),
         )
 
         try:
@@ -520,15 +502,17 @@ async def phase1_planning_stream(request: Request):
         }
 
         def planning_selector(state) -> Optional[str]:
-            def _get(name: str, default=None):
-                if hasattr(state, name):
-                    return getattr(state, name)
-                try:
-                    return state[name]
-                except Exception:
-                    return default
-            round_idx = _get("round_index", 0) or 0
-            history = _get("history", ()) or ()
+            # Newer Agent Framework passes GroupChatState:
+            # - current_round: int
+            # - conversation: list[ChatMessage]
+            # Keep this defensive to tolerate slight shape differences across betas.
+            round_idx = getattr(state, "current_round", None)
+            if round_idx is None:
+                round_idx = getattr(state, "round_index", 0) or 0
+
+            history = getattr(state, "conversation", None)
+            if history is None:
+                history = getattr(state, "history", ()) or ()
 
             # Similar to examples/two_phase_planning_execution.ipynb: limit by round_index
             MAX_ROUNDS = 10
@@ -545,10 +529,10 @@ async def phase1_planning_stream(request: Request):
             # Completion check: Look for PLAN_READY in recent messages (checking from end)
             for turn in reversed(history):
                 text = ""
-                if hasattr(turn, "message") and hasattr(turn.message, "text"):
-                    text = turn.message.text or ""
-                elif hasattr(turn, "text"):
+                if hasattr(turn, "text"):
                     text = turn.text or ""
+                elif hasattr(turn, "message") and hasattr(turn.message, "text"):
+                    text = turn.message.text or ""
                 if text and "PLAN_READY:" in text:
                     logger.info(f"[{request_id}] {get_text('log_plan_ready', LANGUAGE)}")
                     return None
@@ -557,7 +541,9 @@ async def phase1_planning_stream(request: Request):
             last_agent_speaker: Optional[str] = None
             for turn in reversed(history):
                 speaker = None
-                if hasattr(turn, "speaker"):
+                if hasattr(turn, "author_name"):
+                    speaker = turn.author_name
+                elif hasattr(turn, "speaker"):
                     speaker = turn.speaker
                 elif hasattr(turn, "message") and hasattr(turn.message, "author_name"):
                     speaker = turn.message.author_name
@@ -589,7 +575,7 @@ async def phase1_planning_stream(request: Request):
                 cfo_agent,
                 coo_agent,
             ])
-            .set_select_speakers_func(planning_selector, display_name="PlanningOrchestrator")
+            .with_select_speaker_func(planning_selector, orchestrator_name="PlanningOrchestrator")
             .build()
         )
         
@@ -655,8 +641,9 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", "8000"))
+    host = os.getenv("HOST", "0.0.0.0")
     print("=== Agent Framework (Workflow Edition) Backend Starting ===")
     print(f"URL: http://localhost:{port}")
     print(f"Docs: http://localhost:{port}/docs")
     print("\nCtrl+C to stop\n")
-    uvicorn.run(app, host="127.0.0.1", port=port)
+    uvicorn.run(app, host=host, port=port)

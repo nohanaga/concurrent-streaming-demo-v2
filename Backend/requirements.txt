@@ -1,7 +1,7 @@
 # Agent Framework dependencies
-agent-framework-core==1.0.0b251223
-agent-framework-azure-ai==1.0.0b251223
-agent-framework-azure-ai-search==1.0.0b251223
+agent-framework-core==1.0.0b260123
+agent-framework-azure-ai==1.0.0b260123
+agent-framework-azure-ai-search==1.0.0b260123
 azure-search-documents
 
 # Web framework

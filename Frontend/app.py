@@ -9,7 +9,6 @@ from typing import AsyncGenerator
 import os
 from dotenv import load_dotenv
 
-# Load .env file
 load_dotenv()
 
 # Logging configuration
@@ -23,6 +22,16 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['BACKEND_URL'] = os.getenv('BACKEND_URL', 'http://localhost:8000')
 app.config['LANGUAGE'] = os.getenv('LANGUAGE', 'ja')
+
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+app.config['ENABLE_DI_LINK'] = _env_bool('ENABLE_DI_LINK', False)
 
 # Session storage (use Redis in production)
 messages_store = {}
@@ -78,7 +87,8 @@ def front_text(key: str, **kwargs) -> str:
 def index():
     """Main page"""
     language = app.config['LANGUAGE']
-    return render_template('index.html', language=language)
+    enable_di_link = app.config.get('ENABLE_DI_LINK', False)
+    return render_template('index.html', language=language, enable_di_link=enable_di_link)
 
 
 @app.route('/api/messages', methods=['GET'])
@@ -411,4 +421,5 @@ def idobata_stream():
 if __name__ == '__main__':
     port = int(os.getenv("PORT", "5000"))
     debug = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes", "on")
-    app.run(debug=debug, host='127.0.0.1', port=port, threaded=True)
+    host = os.getenv("HOST", "0.0.0.0")
+    app.run(debug=debug, host=host, port=port, threaded=True)

@@ -7,7 +7,7 @@ const translations = {
         // Mode tabs
         'mode_general': '通常チャット',
         'mode_guideline': 'RAG検索',
-        'mode_idobata': 'AI役員',
+        'mode_idobata': 'AI役員会議',
         
         // General chat
         'general_title': 'マルチエージェントチャットアシスタント',
@@ -17,6 +17,7 @@ const translations = {
         'clear_chat': 'チャットをクリア',
         'welcome': 'ようこそ！',
         'welcome_message': 'AIアシスタントに何でも質問してください',
+        'doc_intelligence': 'Document Intelligence',
         
         // RAG search
         'guideline_title': 'RAG検索アシスタント',
@@ -63,9 +64,9 @@ const translations = {
         'sample_general_2': '企業の中長期経営戦略（成長計画・デジタル戦略・資本政策等）を分析して意見を述べよ。',
         'sample_general_3': 'このプロダクト設計は、社内ガイドラインやポリシーに反していないか？',
         
-        'sample_guideline_1': '社内規程における情報持ち出し（データ取り扱い）の基本ルールは？',
-        'sample_guideline_2': 'セキュリティポリシーにある例外申請の手順は？',
-        'sample_guideline_3': 'インシデント対応手順（初動対応）の要点をまとめて。',
+        'sample_guideline_1': '株式売買についてのインサイダー取引規制とは？',
+        'sample_guideline_2': 'インサイダー取引規制の対象は株式のみですか。',
+        'sample_guideline_3': '金融分野におけるサイバーセキュリティに関するガイドラインの項目について教えてください。',
         
         'sample_idobata_1': 'デジタル口座開設の離脱率が高い。改善の経営プランを作成して。',
         'sample_idobata_2': '中小企業向け融資の審査を自動化したい。段階的な導入計画を策定して。',
@@ -104,6 +105,7 @@ const translations = {
         'clear_chat': 'Clear Chat',
         'welcome': 'Welcome!',
         'welcome_message': 'Ask your AI assistant anything',
+        'doc_intelligence': 'Document Intelligence',
         
         // RAG Search
         'guideline_title': 'RAG Search Assistant',
@@ -150,9 +152,9 @@ const translations = {
         'sample_general_2': 'Analyze and comment on the company\'s medium to long-term strategy (growth plan, digital strategy, capital policy, etc.).',
         'sample_general_3': 'Does this product design comply with internal guidelines and policies?',
         
-        'sample_guideline_1': 'What are the rules for handling sensitive data in our policy?',
-        'sample_guideline_2': 'What is the exception request process described in the security policy?',
-        'sample_guideline_3': 'Summarize the first-response steps in the incident response procedure.',
+        'sample_guideline_1': 'What are the insider trading regulations related to stock trading?',
+        'sample_guideline_2': 'Do insider trading regulations apply only to stocks?',
+        'sample_guideline_3': 'Please explain the guideline items related to cybersecurity in the financial sector.',
         
         'sample_idobata_1': 'The digital account opening drop-off rate is high. Create a management plan for improvement.',
         'sample_idobata_2': 'We want to automate loan screening for SMEs. Develop a phased implementation plan.',

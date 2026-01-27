@@ -10,6 +10,9 @@
 <body>
     <!-- 最上位ナビメニュー（Language Switcher） -->
     <nav class="top-nav" aria-label="Language Switcher">
+        {% if enable_di_link %}
+        <a class="top-nav-link" href="https://ca-documentintelligence.ambitiousriver-a2c07a6d.japaneast.azurecontainerapps.io" target="_blank" rel="noopener noreferrer" data-i18n="doc_intelligence">Document Intelligence</a>
+        {% endif %}
         <div class="language-switcher">
             <button class="lang-button" onclick="setLanguage('ja')" data-lang="ja">🇯🇵 日本語</button>
             <button class="lang-button" onclick="setLanguage('en')" data-lang="en">🇺🇸 English</button>
@@ -29,7 +32,7 @@
             </button>
             <button class="mode-tab" data-mode="idobata" onclick="switchMode('idobata')">
                 <span class="mode-icon">🗣️</span>
-                <span data-i18n="mode_idobata">AI役員</span>
+                <span data-i18n="mode_idobata">AI役員会議</span>
             </button>
         </div>
     </nav>
