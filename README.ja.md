@@ -10,7 +10,7 @@
 - **通常チャット（Text streaming）**: 1エージェントの出力をトークン/チャンク単位で表示
 - **マルチエージェント分析（ConcurrentBuilder）**: 2エージェントを並列実行（Critical / Positive）し、最後にSynthesizerが統合
 - **RAG検索（Text streaming）**: Azure AI Search（任意）を使った参照（出典）付き応答
-- **AI井戸端会議（GroupChatBuilder）**: CEO/CTO/CFO/COOで議論し、COOが実行計画をまとめる（tone指定あり）
+- **AI役員会議（GroupChatBuilder）**: CEO/CTO/CFO/COO が前の人の意見を踏まえながら順番に発言し、COOが実行計画をまとめる（tone指定あり）
 - **モデル選択**: リクエストごとに `model` を指定（デプロイ名のマッピングは環境変数で上書き可能）
 - **簡易セッション履歴**: Frontendがメモリに履歴を保持（本番はRedis等を推奨）
 
@@ -18,8 +18,8 @@
 ### マルチエージェント分析（ConcurrentBuilder）
 <img src="./img/002.gif" width="80%" />
 
-### AI井戸端会議（GroupChatBuilder）
-<img src="./img/001.png" width="80%" />
+### AI役員会議（GroupChatBuilder）
+<img src="./img/005.gif" width="80%" />
 
 ## アーキテクチャ概要
 

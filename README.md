@@ -10,7 +10,7 @@ It is a 2-tier setup: Browser → Frontend (Flask) → Backend (FastAPI). It use
 - **Regular chat (Text streaming)**: Display a single agent’s output token/chunk by token/chunk
 - **Multi-agent analysis (ConcurrentBuilder)**: Run two agents in parallel (Critical / Positive), then a Synthesizer merges the results
 - **RAG search (Text streaming)**: Referenced responses using Azure AI Search (optional)
-- **AI board meeting (GroupChatBuilder)**: Discuss with CEO/CTO/CFO/COO and have the COO produce an execution plan (with `tone`)
+- **AI board meeting (GroupChatBuilder)**: The CEO, CTO, CFO, and COO speak in turn, building on each other's points, with the COO compiling the implementation plan. (with `tone`)
 - **Model selection**: Specify `model` per request (deployment mapping can be overridden via environment variables)
 - **Lightweight session history**: The Frontend keeps history in memory (use Redis, etc. in production)
 
